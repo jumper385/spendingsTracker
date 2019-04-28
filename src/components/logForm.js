@@ -6,17 +6,38 @@ import {
   Checkbox,
   Input,
 } from 'semantic-ui-react'
+import firebase from './firebase'
+
+const shortid = require('shortid')
+const db = firebase.firestore()
+
+
+// https://medium.com/get-it-working/get-googles-firestore-working-with-react-c78f198d2364
 
 export class LogForm extends Component {
+
+  super(props){
+    this.onSubmit.bind(this.onSubmit)
+  }
 
   state = {
     isCash: false,
     isOutgoing: false
   }
 
+  onSubmit(){
+    db.collection('logs').add({
+      ...this.state, 
+      timestamp: new Date(),
+      shortid: shortid.generate()
+    }).then( data => {
+      console.log(data)
+    })
+  }
+
   render(){
     return(
-      <Form size='small' onSubmit={e => console.log(this.state)}>
+      <Form size='small' onSubmit={() => this.onSubmit()}>
         <Header>Enter a new Log</Header>
         <Form.Group widths='equal'>
           <Form.Input fluid placeholder='Spending Name' label='Spending Name' required onChange={e => this.setState({name: e.target.value})}/>
